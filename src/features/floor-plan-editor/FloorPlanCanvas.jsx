@@ -1,10 +1,13 @@
+import { useMemo } from 'react'
 import { Layer, Rect, Stage } from 'react-konva'
 import MapBackgroundImage from '../../components/MapBackgroundImage'
+import { buildTableNumbers } from '../../lib/tableNumbering'
 import MapObjectShape from './MapObjectShape'
 import { useFloorPlanStore } from './floorPlanStore'
 
 function FloorPlanCanvas({ floorPlan, width = 1000, height = 700 }) {
   const objects = useFloorPlanStore((s) => s.objects)
+  const tableNumbers = useMemo(() => buildTableNumbers(objects), [objects])
   const selectedId = useFloorPlanStore((s) => s.selectedId)
   const select = useFloorPlanStore((s) => s.select)
   const updateObjectLocal = useFloorPlanStore((s) => s.updateObjectLocal)
@@ -39,6 +42,7 @@ function FloorPlanCanvas({ floorPlan, width = 1000, height = 700 }) {
             <MapObjectShape
               key={object.id}
               object={object}
+              tableNumber={tableNumbers.get(object.id)}
               isSelected={object.id === selectedId}
               onSelect={select}
               onChange={handleChange}

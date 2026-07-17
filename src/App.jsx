@@ -6,6 +6,7 @@ import AdminDashboardPage from './features/admin/AdminDashboardPage'
 import RequireAuth from './features/admin/RequireAuth'
 import { useAuthStore } from './features/admin/authStore'
 import FloorPlanEditorPage from './features/floor-plan-editor/FloorPlanEditorPage'
+import LayoutsPage from './features/layouts/LayoutsPage'
 
 const navLinkClass = ({ isActive }) =>
   `text-sm font-medium transition-colors ${
@@ -33,6 +34,9 @@ function App() {
           <NavLink to="/admin/editor" className={navLinkClass}>
             Editor piantina
           </NavLink>
+          <NavLink to="/admin/layouts" className={navLinkClass}>
+            Disposizioni
+          </NavLink>
         </div>
       </nav>
 
@@ -52,6 +56,14 @@ function App() {
           element={
             <RequireAuth>
               <FloorPlanEditorPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/admin/layouts"
+          element={
+            <RequireAuth>
+              <LayoutsPage />
             </RequireAuth>
           }
         />

@@ -1,10 +1,13 @@
+import { useMemo } from 'react'
 import { Layer, Rect, Stage } from 'react-konva'
 import MapBackgroundImage from '../../components/MapBackgroundImage'
+import { buildTableNumbers } from '../../lib/tableNumbering'
 import BookingMapObject from './BookingMapObject'
 import { useBookingStore } from './bookingStore'
 
 function BookingCanvas({ floorPlan, width = 1000, height = 700 }) {
   const objects = useBookingStore((s) => s.objects)
+  const tableNumbers = useMemo(() => buildTableNumbers(objects), [objects])
   const occupiedTableIds = useBookingStore((s) => s.occupiedTableIds)
   const partySize = useBookingStore((s) => s.partySize)
   const selectedTableId = useBookingStore((s) => s.selectedTableId)
@@ -34,6 +37,7 @@ function BookingCanvas({ floorPlan, width = 1000, height = 700 }) {
             <BookingMapObject
               key={object.id}
               object={object}
+              tableNumber={tableNumbers.get(object.id)}
               status={getStatus(object)}
               isSelected={object.id === selectedTableId}
               onSelect={selectTable}

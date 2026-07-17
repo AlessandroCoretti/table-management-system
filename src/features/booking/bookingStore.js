@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { supabase } from '../../lib/supabase'
+import { resolveLayoutId } from '../../lib/layoutResolver'
 
 let realtimeChannel = null
 
@@ -57,10 +58,24 @@ export const useBookingStore = create((set, get) => ({
 
   async selectFloorPlan(floorPlanId) {
     set({ activeFloorPlanId: floorPlanId, selectedTableId: null })
+    await get().loadObjectsForActiveSelection()
+  },
+
+  // Carica i tavoli della disposizione corretta per la sala e la data
+  // scelte: quella assegnata a quella data specifica, se esiste, altrimenti
+  // la disposizione predefinita della sala.
+  async loadObjectsForActiveSelection() {
+    const { activeFloorPlanId, arrivalDate } = get()
+    if (!activeFloorPlanId) return
+    const layoutId = await resolveLayoutId(activeFloorPlanId, arrivalDate)
+    if (!layoutId) {
+      set({ objects: [] })
+      return
+    }
     const { data, error } = await supabase
       .from('map_objects')
       .select('*')
-      .eq('floor_plan_id', floorPlanId)
+      .eq('layout_id', layoutId)
       .order('z_index', { ascending: true })
     if (error) {
       set({ error: error.message })
@@ -75,6 +90,7 @@ export const useBookingStore = create((set, get) => ({
   },
   setArrivalDate(value) {
     set({ arrivalDate: value, selectedTableId: null })
+    get().loadObjectsForActiveSelection()
     get().refreshAvailability()
   },
   setArrivalTime(value) {
@@ -134,7 +150,7 @@ export const useBookingStore = create((set, get) => ({
 
     const arrival = get().getArrivalTimestamp()
 
-    // Nota: niente .select() dopo l'insert — restituire la riga richiederebbe
+    // Nota: niente .select() dopo l'insert, restituire la riga richiederebbe
     // il permesso SELECT su reservations, che è volutamente negato al ruolo
     // anon per non esporre le prenotazioni altrui. La conferma si costruisce
     // con i dati che il cliente ha appena inserito nel form.

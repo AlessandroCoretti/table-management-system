@@ -1,3 +1,4 @@
+import { FILL_BY_TYPE, STROKE_BY_TYPE } from './MapObjectShape'
 import { useFloorPlanStore } from './floorPlanStore'
 
 function PropertiesPanel() {
@@ -22,6 +23,8 @@ function PropertiesPanel() {
     persistObject(object.id, changes)
   }
 
+  const isTable = object.type === 'table'
+
   return (
     <div className="space-y-3 rounded-lg border border-gray-200 bg-white p-4">
       <h3 className="text-sm font-semibold text-gray-900">Proprietà oggetto</h3>
@@ -36,7 +39,7 @@ function PropertiesPanel() {
         />
       </label>
 
-      {object.type === 'table' && (
+      {isTable && (
         <label className="block text-sm text-gray-600">
           Posti
           <input
@@ -47,6 +50,40 @@ function PropertiesPanel() {
             className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1 text-sm"
           />
         </label>
+      )}
+
+      {!isTable && (
+        <div className="space-y-2 border-t border-gray-100 pt-2">
+          <div className="flex items-center justify-between text-sm text-gray-600">
+            <label className="flex items-center gap-2">
+              Colore
+              <input
+                type="color"
+                value={object.fill_color || FILL_BY_TYPE[object.type] || '#e5e7eb'}
+                onChange={(e) => commit({ fill_color: e.target.value })}
+                className="h-7 w-10 rounded border border-gray-300"
+              />
+            </label>
+            <label className="flex items-center gap-2">
+              Bordo
+              <input
+                type="color"
+                value={object.stroke_color || STROKE_BY_TYPE[object.type] || '#4b5563'}
+                onChange={(e) => commit({ stroke_color: e.target.value })}
+                className="h-7 w-10 rounded border border-gray-300"
+              />
+            </label>
+          </div>
+          {(object.fill_color || object.stroke_color) && (
+            <button
+              type="button"
+              onClick={() => commit({ fill_color: null, stroke_color: null })}
+              className="text-xs text-gray-400 hover:text-gray-600"
+            >
+              Ripristina colore predefinito
+            </button>
+          )}
+        </div>
       )}
 
       <button

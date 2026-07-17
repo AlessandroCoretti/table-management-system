@@ -11,12 +11,12 @@ function ReservationDetailPanel() {
   const reservation = reservationsForDay.find((r) => r.id === selectedReservationId)
   if (!reservation) return null
 
-  const tableLabel = objects.find((o) => o.id === reservation.table_id)?.label ?? '—'
+  const tableLabel = objects.find((o) => o.id === reservation.table_id)?.label ?? 'n/d'
 
   return (
     <div className="space-y-3 rounded-lg border border-gray-200 bg-white p-4">
       <div className="flex items-start justify-between">
-        <h3 className="text-sm font-semibold text-gray-900">Prenotazione — Tavolo {tableLabel}</h3>
+        <h3 className="text-sm font-semibold text-gray-900">Prenotazione: Tavolo {tableLabel}</h3>
         <button type="button" onClick={clearSelection} className="text-xs text-gray-400 hover:text-gray-600">
           Chiudi
         </button>

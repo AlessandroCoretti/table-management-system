@@ -1,21 +1,21 @@
 import { useEffect, useRef } from 'react'
 import { Circle, Group, Rect, Text, Transformer } from 'react-konva'
 
-const FILL_BY_TYPE = {
+export const FILL_BY_TYPE = {
   table: '#fef3c7',
-  bar: '#ddd6fe',
+  bar: '#fde68a',
   wall: '#6b7280',
   door: '#b45309',
 }
 
-const STROKE_BY_TYPE = {
+export const STROKE_BY_TYPE = {
   table: '#d97706',
-  bar: '#7c3aed',
+  bar: '#b45309',
   wall: '#374151',
   door: '#92400e',
 }
 
-function MapObjectShape({ object, isSelected, onSelect, onChange }) {
+function MapObjectShape({ object, tableNumber, isSelected, onSelect, onChange }) {
   const shapeRef = useRef(null)
   const transformerRef = useRef(null)
 
@@ -26,8 +26,8 @@ function MapObjectShape({ object, isSelected, onSelect, onChange }) {
     }
   }, [isSelected])
 
-  const fill = FILL_BY_TYPE[object.type] ?? '#e5e7eb'
-  const stroke = STROKE_BY_TYPE[object.type] ?? '#4b5563'
+  const fill = object.fill_color || FILL_BY_TYPE[object.type] || '#e5e7eb'
+  const stroke = object.stroke_color || STROKE_BY_TYPE[object.type] || '#4b5563'
 
   const commonProps = {
     ref: shapeRef,
@@ -73,11 +73,11 @@ function MapObjectShape({ object, isSelected, onSelect, onChange }) {
           cornerRadius={4}
         />
       )}
-      {object.label && (
+      {(object.type === 'table' || object.label) && (
         <Text
           x={object.x}
           y={object.y}
-          text={object.seats ? `${object.label}\n${object.seats}p` : object.label}
+          text={object.type === 'table' ? `TAV.${tableNumber ?? '?'}` : object.label}
           fontSize={13}
           fill="#111827"
           align="center"

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import FloorPlanCanvas from './FloorPlanCanvas'
 import ObjectPalette from './ObjectPalette'
 import PropertiesPanel from './PropertiesPanel'
@@ -14,6 +15,9 @@ function FloorPlanEditorPage() {
   const createFloorPlan = useFloorPlanStore((s) => s.createFloorPlan)
   const deleteFloorPlan = useFloorPlanStore((s) => s.deleteFloorPlan)
   const countReservationsForFloorPlan = useFloorPlanStore((s) => s.countReservationsForFloorPlan)
+  const layouts = useFloorPlanStore((s) => s.layouts)
+  const activeLayoutId = useFloorPlanStore((s) => s.activeLayoutId)
+  const selectLayout = useFloorPlanStore((s) => s.selectLayout)
   const uploadBackground = useFloorPlanStore((s) => s.uploadBackground)
   const removeBackground = useFloorPlanStore((s) => s.removeBackground)
   const backgroundOpacity = useFloorPlanStore((s) => s.backgroundOpacity)
@@ -95,6 +99,31 @@ function FloorPlanEditorPage() {
 
           {activeFloorPlan && (
             <>
+              <div className="flex flex-wrap items-center gap-2 rounded-lg border border-gray-200 bg-white p-3">
+                <span className="text-sm text-gray-500">Disposizione:</span>
+                {layouts.map((layout) => (
+                  <button
+                    key={layout.id}
+                    type="button"
+                    onClick={() => selectLayout(layout.id)}
+                    className={`rounded-md px-2.5 py-1 text-sm ${
+                      layout.id === activeLayoutId
+                        ? 'bg-brand text-white'
+                        : 'border border-gray-300 bg-white text-gray-700'
+                    }`}
+                  >
+                    {layout.name}
+                    {layout.is_default && ' (predefinita)'}
+                  </button>
+                ))}
+                <Link
+                  to="/admin/layouts"
+                  className="ml-auto text-sm text-brand hover:text-brand-dark"
+                >
+                  Gestisci disposizioni →
+                </Link>
+              </div>
+
               <ObjectPalette />
 
               <div className="flex items-center gap-4 rounded-lg border border-gray-200 bg-white p-3">

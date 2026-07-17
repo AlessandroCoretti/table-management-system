@@ -14,7 +14,7 @@ function ReservationList() {
   const selectedReservationId = useDashboardStore((s) => s.selectedReservationId)
   const selectReservation = useDashboardStore((s) => s.selectReservation)
 
-  const tableLabelById = (id) => objects.find((o) => o.id === id)?.label ?? '—'
+  const tableLabelById = (id) => objects.find((o) => o.id === id)?.label ?? 'n/d'
 
   if (!reservationsForDay.length) {
     return (
@@ -41,7 +41,7 @@ function ReservationList() {
                 hour: '2-digit',
                 minute: '2-digit',
               })}{' '}
-              — {r.customer_name} ({r.party_size}p) · Tavolo {tableLabelById(r.table_id)}
+              · {r.customer_name} ({r.party_size}p) · Tavolo {tableLabelById(r.table_id)}
             </p>
             <p className="text-xs text-gray-500">{r.customer_phone}</p>
           </div>

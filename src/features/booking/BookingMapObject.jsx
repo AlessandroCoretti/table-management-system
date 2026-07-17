@@ -3,12 +3,12 @@ import { Circle, Group, Rect, Text } from 'react-konva'
 const STATIC_FILL = {
   wall: '#6b7280',
   door: '#b45309',
-  bar: '#ddd6fe',
+  bar: '#fde68a',
 }
 const STATIC_STROKE = {
   wall: '#374151',
   door: '#92400e',
-  bar: '#7c3aed',
+  bar: '#b45309',
 }
 
 const TABLE_COLORS = {
@@ -18,11 +18,11 @@ const TABLE_COLORS = {
   tooSmall: { fill: '#e5e7eb', stroke: '#9ca3af' },
 }
 
-function BookingMapObject({ object, status, isSelected, onSelect }) {
+function BookingMapObject({ object, tableNumber, status, isSelected, onSelect }) {
   const isTable = object.type === 'table'
 
-  let fill = STATIC_FILL[object.type] ?? '#e5e7eb'
-  let stroke = STATIC_STROKE[object.type] ?? '#4b5563'
+  let fill = object.fill_color || STATIC_FILL[object.type] || '#e5e7eb'
+  let stroke = object.stroke_color || STATIC_STROKE[object.type] || '#4b5563'
   let cursor = 'default'
 
   if (isTable) {
@@ -74,11 +74,11 @@ function BookingMapObject({ object, status, isSelected, onSelect }) {
           cornerRadius={4}
         />
       )}
-      {object.label && (
+      {(isTable || object.label) && (
         <Text
           x={object.x}
           y={object.y}
-          text={object.seats ? `${object.label}\n${object.seats}p` : object.label}
+          text={isTable ? `TAV.${tableNumber ?? '?'}` : object.label}
           fontSize={13}
           fill="#111827"
           align="center"

@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { supabase } from '../../lib/supabase'
+import { resolveLayoutId } from '../../lib/layoutResolver'
 
 let realtimeChannel = null
 
@@ -66,10 +67,24 @@ export const useDashboardStore = create((set, get) => ({
 
   async selectFloorPlan(floorPlanId) {
     set({ activeFloorPlanId: floorPlanId })
+    await get().loadObjectsForActiveSelection()
+  },
+
+  // Carica i tavoli della disposizione corretta per la sala e il giorno
+  // selezionati: quella assegnata a quella data specifica, se esiste,
+  // altrimenti la disposizione predefinita della sala.
+  async loadObjectsForActiveSelection() {
+    const { activeFloorPlanId, selectedDate } = get()
+    if (!activeFloorPlanId) return
+    const layoutId = await resolveLayoutId(activeFloorPlanId, selectedDate)
+    if (!layoutId) {
+      set({ objects: [] })
+      return
+    }
     const { data, error } = await supabase
       .from('map_objects')
       .select('*')
-      .eq('floor_plan_id', floorPlanId)
+      .eq('layout_id', layoutId)
       .order('z_index', { ascending: true })
     if (error) {
       set({ error: error.message })
@@ -80,6 +95,7 @@ export const useDashboardStore = create((set, get) => ({
 
   setSelectedDate(date) {
     set({ selectedDate: date, selectedReservationId: null, creatingForTableId: null })
+    get().loadObjectsForActiveSelection()
     get().loadReservationsForDay()
   },
 

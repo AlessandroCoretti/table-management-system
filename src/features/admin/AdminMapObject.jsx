@@ -4,21 +4,21 @@ import { useDashboardStore } from './dashboardStore'
 const STATIC_FILL = {
   wall: '#6b7280',
   door: '#b45309',
-  bar: '#ddd6fe',
+  bar: '#fde68a',
 }
 const STATIC_STROKE = {
   wall: '#374151',
   door: '#92400e',
-  bar: '#7c3aed',
+  bar: '#b45309',
 }
 
-function AdminMapObject({ object, isSelected }) {
+function AdminMapObject({ object, tableNumber, isSelected }) {
   const reservation = useDashboardStore((s) => s.findOccupyingReservation(object.id))
   const selectTableOnMap = useDashboardStore((s) => s.selectTableOnMap)
   const isTable = object.type === 'table'
 
-  let fill = STATIC_FILL[object.type] ?? '#e5e7eb'
-  let stroke = STATIC_STROKE[object.type] ?? '#4b5563'
+  let fill = object.fill_color || STATIC_FILL[object.type] || '#e5e7eb'
+  let stroke = object.stroke_color || STATIC_STROKE[object.type] || '#4b5563'
 
   if (isTable) {
     if (isSelected) {
@@ -68,16 +68,16 @@ function AdminMapObject({ object, isSelected }) {
           cornerRadius={4}
         />
       )}
-      {object.label && (
+      {(isTable || object.label) && (
         <Text
           x={object.x}
           y={object.y}
           text={
-            reservation
-              ? `${object.label}\n${reservation.customer_name.split(' ')[0]}`
-              : object.seats
-                ? `${object.label}\n${object.seats}p`
-                : object.label
+            isTable
+              ? reservation
+                ? `TAV.${tableNumber ?? '?'}\n${reservation.customer_name.split(' ')[0]}`
+                : `TAV.${tableNumber ?? '?'}`
+              : object.label
           }
           fontSize={12}
           fill="#111827"

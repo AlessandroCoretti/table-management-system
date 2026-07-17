@@ -18,7 +18,7 @@ function WalkInForm() {
 
   if (!creatingForTableId) return null
 
-  const tableLabel = objects.find((o) => o.id === creatingForTableId)?.label ?? '—'
+  const tableLabel = objects.find((o) => o.id === creatingForTableId)?.label ?? 'n/d'
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -32,7 +32,7 @@ function WalkInForm() {
   return (
     <div className="space-y-3 rounded-lg border border-gray-200 bg-white p-4">
       <div className="flex items-start justify-between">
-        <h3 className="text-sm font-semibold text-gray-900">Nuova prenotazione — Tavolo {tableLabel}</h3>
+        <h3 className="text-sm font-semibold text-gray-900">Nuova prenotazione: Tavolo {tableLabel}</h3>
         <button type="button" onClick={clearSelection} className="text-xs text-gray-400 hover:text-gray-600">
           Chiudi
         </button>

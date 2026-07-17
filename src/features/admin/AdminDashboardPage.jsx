@@ -65,7 +65,8 @@ function AdminDashboardPage() {
               <input
                 type="time"
                 value={viewTime}
-                onChange={(e) => setViewTime(e.target.value)}
+                min="18:00"
+                onChange={(e) => setViewTime(e.target.value < '18:00' ? '18:00' : e.target.value)}
                 className="mt-1 block rounded-md border border-gray-300 px-3 py-2 text-sm"
               />
             </label>

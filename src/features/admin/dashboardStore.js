@@ -22,7 +22,7 @@ export const useDashboardStore = create((set, get) => ({
   reservationsForDay: [],
 
   selectedDate: new Date().toISOString().slice(0, 10),
-  viewTime: new Date().toTimeString().slice(0, 5),
+  viewTime: new Date().toTimeString().slice(0, 5) < '18:00' ? '18:00' : new Date().toTimeString().slice(0, 5),
 
   selectedReservationId: null,
   creatingForTableId: null,
@@ -141,14 +141,17 @@ export const useDashboardStore = create((set, get) => ({
     return new Date(`${selectedDate}T${viewTime}:00`)
   },
 
+  // Un tavolo con una prenotazione più tardi in giornata è già "occupato"
+  // fin dall'inizio del servizio (non solo nella finestra esatta
+  // arrivo -> arrivo+durata): lo staff deve vederlo tenuto da subito.
   findOccupyingReservation(tableId) {
     const viewTs = get().getViewTimestamp().getTime()
     return get().reservationsForDay.find((r) => {
       if (r.table_id !== tableId) return false
-      if (r.status === 'cancelled' || r.status === 'no_show') return false
+      if (r.status === 'cancelled' || r.status === 'no_show' || r.status === 'completed') return false
       const start = new Date(r.arrival_time).getTime()
       const end = start + r.duration_minutes * 60000
-      return viewTs >= start && viewTs < end
+      return viewTs < end
     })
   },
 

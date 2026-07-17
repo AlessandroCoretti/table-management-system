@@ -85,7 +85,8 @@ function BookingPage() {
               <input
                 type="time"
                 value={arrivalTime}
-                onChange={(e) => setArrivalTime(e.target.value)}
+                min="18:00"
+                onChange={(e) => setArrivalTime(e.target.value < '18:00' ? '18:00' : e.target.value)}
                 className="mt-1 block rounded-md border border-gray-300 px-3 py-2 text-sm"
               />
             </label>

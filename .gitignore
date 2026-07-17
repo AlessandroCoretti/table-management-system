@@ -13,6 +13,10 @@ dist-ssr
 *.local
 .env
 
+# Config locali di strumenti, non da pubblicare nel repo
+.claude
+supabase
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

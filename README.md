@@ -49,4 +49,4 @@ src/
 
 ## License
 
-Proprietary — all rights reserved.
+Proprietary - all rights reserved.

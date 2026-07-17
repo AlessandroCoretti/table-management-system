@@ -1,8 +1,10 @@
 import { create } from 'zustand'
 import { supabase } from '../../lib/supabase'
 import { resolveLayoutId } from '../../lib/layoutResolver'
+import { startLiveSync } from '../../lib/liveSync'
 
 let realtimeChannel = null
+let liveSyncStarted = false
 
 export const useBookingStore = create((set, get) => ({
   restaurant: null,
@@ -133,6 +135,11 @@ export const useBookingStore = create((set, get) => ({
         () => get().refreshAvailability()
       )
       .subscribe()
+
+    if (!liveSyncStarted) {
+      liveSyncStarted = true
+      startLiveSync(() => get().refreshAvailability())
+    }
   },
 
   selectTable(tableId) {

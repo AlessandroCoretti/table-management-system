@@ -1,8 +1,10 @@
 import { create } from 'zustand'
 import { supabase } from '../../lib/supabase'
 import { resolveLayoutId } from '../../lib/layoutResolver'
+import { startLiveSync } from '../../lib/liveSync'
 
 let realtimeChannel = null
+let liveSyncStarted = false
 
 const STATUS_LABELS = {
   confirmed: 'Confermata',
@@ -143,6 +145,11 @@ export const useDashboardStore = create((set, get) => ({
         () => get().loadReservationsForDay()
       )
       .subscribe()
+
+    if (!liveSyncStarted) {
+      liveSyncStarted = true
+      startLiveSync(() => get().refresh())
+    }
   },
 
   getViewTimestamp() {

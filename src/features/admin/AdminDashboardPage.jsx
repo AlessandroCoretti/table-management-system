@@ -19,6 +19,8 @@ function AdminDashboardPage() {
   const setViewTime = useDashboardStore((s) => s.setViewTime)
   const selectedReservationId = useDashboardStore((s) => s.selectedReservationId)
   const creatingForTableId = useDashboardStore((s) => s.creatingForTableId)
+  const refresh = useDashboardStore((s) => s.refresh)
+  const refreshing = useDashboardStore((s) => s.refreshing)
   const signOut = useAuthStore((s) => s.signOut)
 
   useEffect(() => {
@@ -31,13 +33,23 @@ function AdminDashboardPage() {
     <div className="mx-auto max-w-6xl space-y-4 p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-gray-900">Dashboard prenotazioni</h1>
-        <button
-          type="button"
-          onClick={signOut}
-          className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50"
-        >
-          Esci
-        </button>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={refresh}
+            disabled={refreshing}
+            className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50"
+          >
+            {refreshing ? 'Aggiornamento…' : 'Aggiorna'}
+          </button>
+          <button
+            type="button"
+            onClick={signOut}
+            className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50"
+          >
+            Esci
+          </button>
+        </div>
       </div>
 
       {error && (

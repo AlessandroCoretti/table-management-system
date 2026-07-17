@@ -28,6 +28,7 @@ export const useDashboardStore = create((set, get) => ({
   creatingForTableId: null,
 
   loading: false,
+  refreshing: false,
   error: null,
 
   async init() {
@@ -121,6 +122,14 @@ export const useDashboardStore = create((set, get) => ({
       return
     }
     set({ reservationsForDay: data ?? [] })
+  },
+
+  // Aggiornamento manuale (pulsante "Aggiorna"): utile finché il realtime
+  // non è confermato attivo, o semplicemente per un refresh immediato.
+  async refresh() {
+    set({ refreshing: true })
+    await Promise.all([get().loadReservationsForDay(), get().loadObjectsForActiveSelection()])
+    set({ refreshing: false })
   },
 
   subscribeRealtime() {

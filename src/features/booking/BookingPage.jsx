@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { localDateString, localTimeString } from '../../lib/dateHelpers'
+import { localDateString, soonTimeString } from '../../lib/dateHelpers'
 import BookingCanvas from './BookingCanvas'
 import ReservationForm from './ReservationForm'
 import { useBookingStore } from './bookingStore'
@@ -29,7 +29,7 @@ function BookingPage() {
 
   const today = localDateString()
   const isToday = arrivalDate === today
-  const minTime = isToday && localTimeString() > '18:00' ? localTimeString() : '18:00'
+  const minTime = isToday && soonTimeString() > '18:00' ? soonTimeString() : '18:00'
 
   if (confirmedReservation) {
     return (

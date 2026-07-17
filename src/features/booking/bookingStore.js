@@ -2,7 +2,12 @@ import { create } from 'zustand'
 import { supabase } from '../../lib/supabase'
 import { resolveLayoutId } from '../../lib/layoutResolver'
 import { startLiveSync } from '../../lib/liveSync'
-import { localDateString } from '../../lib/dateHelpers'
+import { localDateString, soonTimeString } from '../../lib/dateHelpers'
+
+function defaultArrivalTime() {
+  const soon = soonTimeString()
+  return soon > '20:00' ? soon : '20:00'
+}
 
 let realtimeChannel = null
 let liveSyncStarted = false
@@ -18,7 +23,7 @@ export const useBookingStore = create((set, get) => ({
 
   partySize: 2,
   arrivalDate: localDateString(),
-  arrivalTime: '20:00',
+  arrivalTime: defaultArrivalTime(),
 
   selectedTableId: null,
   submitting: false,
@@ -101,6 +106,19 @@ export const useBookingStore = create((set, get) => ({
     get().refreshAvailability()
   },
 
+  // Se la pagina resta aperta a lungo, l'orario scelto in precedenza può
+  // "scadere" (diventare passato) senza che l'utente lo tocchi. Richiamata
+  // periodicamente per tenerlo sempre valido.
+  ensureValidArrivalTime() {
+    const { arrivalDate, arrivalTime } = get()
+    if (arrivalDate !== localDateString()) return
+    const soon = soonTimeString()
+    if (arrivalTime < soon) {
+      set({ arrivalTime: soon })
+      get().refreshAvailability()
+    }
+  },
+
   getArrivalTimestamp() {
     const { arrivalDate, arrivalTime } = get()
     return new Date(`${arrivalDate}T${arrivalTime}:00`)
@@ -139,7 +157,10 @@ export const useBookingStore = create((set, get) => ({
 
     if (!liveSyncStarted) {
       liveSyncStarted = true
-      startLiveSync(() => get().refreshAvailability())
+      startLiveSync(() => {
+        get().ensureValidArrivalTime()
+        get().refreshAvailability()
+      })
     }
   },
 

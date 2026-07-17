@@ -10,3 +10,10 @@ export function localDateString(date = new Date()) {
 export function localTimeString(date = new Date()) {
   return `${pad(date.getHours())}:${pad(date.getMinutes())}`
 }
+
+// L'orario è gestito con granularità al minuto (HH:MM, senza secondi): un
+// valore "adesso" può risultare già passato di pochi secondi al momento
+// dell'invio. Questo helper aggiunge un margine di sicurezza.
+export function soonTimeString(bufferMs = 60000) {
+  return localTimeString(new Date(Date.now() + bufferMs))
+}

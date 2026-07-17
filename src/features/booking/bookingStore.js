@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { supabase } from '../../lib/supabase'
 import { resolveLayoutId } from '../../lib/layoutResolver'
 import { startLiveSync } from '../../lib/liveSync'
+import { localDateString } from '../../lib/dateHelpers'
 
 let realtimeChannel = null
 let liveSyncStarted = false
@@ -16,7 +17,7 @@ export const useBookingStore = create((set, get) => ({
   error: null,
 
   partySize: 2,
-  arrivalDate: new Date().toISOString().slice(0, 10),
+  arrivalDate: localDateString(),
   arrivalTime: '20:00',
 
   selectedTableId: null,
@@ -153,9 +154,14 @@ export const useBookingStore = create((set, get) => ({
   async submitReservation({ name, phone, email, notes }) {
     const { restaurant, selectedTableId, partySize } = get()
     if (!restaurant || !selectedTableId) return
-    set({ submitting: true, submitError: null })
 
     const arrival = get().getArrivalTimestamp()
+    if (arrival.getTime() <= Date.now()) {
+      set({ submitError: "L'orario scelto è già passato: scegli un orario futuro." })
+      return
+    }
+
+    set({ submitting: true, submitError: null })
 
     // Nota: niente .select() dopo l'insert, restituire la riga richiederebbe
     // il permesso SELECT su reservations, che è volutamente negato al ruolo

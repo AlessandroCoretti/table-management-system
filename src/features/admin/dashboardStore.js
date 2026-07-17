@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { supabase } from '../../lib/supabase'
 import { resolveLayoutId } from '../../lib/layoutResolver'
 import { startLiveSync } from '../../lib/liveSync'
+import { localDateString, localTimeString } from '../../lib/dateHelpers'
 
 let realtimeChannel = null
 let liveSyncStarted = false
@@ -23,8 +24,8 @@ export const useDashboardStore = create((set, get) => ({
   objects: [],
   reservationsForDay: [],
 
-  selectedDate: new Date().toISOString().slice(0, 10),
-  viewTime: new Date().toTimeString().slice(0, 5) < '18:00' ? '18:00' : new Date().toTimeString().slice(0, 5),
+  selectedDate: localDateString(),
+  viewTime: localTimeString() < '18:00' ? '18:00' : localTimeString(),
 
   selectedReservationId: null,
   creatingForTableId: null,

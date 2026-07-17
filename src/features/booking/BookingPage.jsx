@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { localDateString, localTimeString } from '../../lib/dateHelpers'
 import BookingCanvas from './BookingCanvas'
 import ReservationForm from './ReservationForm'
 import { useBookingStore } from './bookingStore'
@@ -25,6 +26,10 @@ function BookingPage() {
   }, [init])
 
   const activeFloorPlan = floorPlans.find((fp) => fp.id === activeFloorPlanId)
+
+  const today = localDateString()
+  const isToday = arrivalDate === today
+  const minTime = isToday && localTimeString() > '18:00' ? localTimeString() : '18:00'
 
   if (confirmedReservation) {
     return (
@@ -76,7 +81,8 @@ function BookingPage() {
               <input
                 type="date"
                 value={arrivalDate}
-                onChange={(e) => setArrivalDate(e.target.value)}
+                min={today}
+                onChange={(e) => setArrivalDate(e.target.value < today ? today : e.target.value)}
                 className="mt-1 block rounded-md border border-gray-300 px-3 py-2 text-sm"
               />
             </label>
@@ -85,8 +91,8 @@ function BookingPage() {
               <input
                 type="time"
                 value={arrivalTime}
-                min="18:00"
-                onChange={(e) => setArrivalTime(e.target.value < '18:00' ? '18:00' : e.target.value)}
+                min={minTime}
+                onChange={(e) => setArrivalTime(e.target.value < minTime ? minTime : e.target.value)}
                 className="mt-1 block rounded-md border border-gray-300 px-3 py-2 text-sm"
               />
             </label>
